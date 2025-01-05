@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-app
+  namespace: your-namespace
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "hello-world-app"
+    vault.hashicorp.com/agent-inject-secret-hello-world-secret: "secret/data/hello-world-app"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-world-app
+  template:
+    metadata:
+      labels:
+        app: hello-world-app
+    spec:
+      serviceAccountName: default
+      containers:
+      - name: hello-world-app
+        image: your-docker-registry/hello-world-app:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: HELLO_WORLD_SECRET
+          value: "vault:hello-world-secret"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-app
+  namespace: your-namespace
+spec:
+  selector:
+    app: hello-world-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

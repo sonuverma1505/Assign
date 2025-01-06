@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world-app
-  namespace: your-namespace
+  namespace: app  # Use the 'app' namespace
   annotations:
     vault.hashicorp.com/agent-inject: "true"
     vault.hashicorp.com/role: "hello-world-app"
@@ -19,19 +19,19 @@ spec:
     spec:
       serviceAccountName: default
       containers:
-      - name: hello-world-app
-        image: your-docker-registry/hello-world-app:latest
-        ports:
-        - containerPort: 80
-        env:
-        - name: HELLO_WORLD_SECRET
-          value: "vault:hello-world-secret"
+        - name: hello-world-app
+          image: sonuverma1505/hello-world-app:latest  # Placeholder, will be updated by Jenkins
+          ports:
+            - containerPort: 80
+          env:
+            - name: HELLO_WORLD_SECRET
+              value: "vault:hello-world-secret"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: hello-world-app
-  namespace: your-namespace
+  namespace: app  # Use the 'app' namespace
 spec:
   selector:
     app: hello-world-app

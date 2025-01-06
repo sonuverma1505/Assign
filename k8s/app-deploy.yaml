@@ -7,6 +7,10 @@ metadata:
     vault.hashicorp.com/agent-inject: "true"
     vault.hashicorp.com/role: "hello-world-app"
     vault.hashicorp.com/agent-inject-secret-hello-world-secret: "secret/data/hello-world-app"
+    vault.hashicorp.com/agent-inject-template-hello-world-secret: |
+      {{- with secret "secret/data/hello-world-app" -}}
+      {{ .Data.data.app-secret }}
+      {{- end }}
 spec:
   replicas: 1
   selector:
@@ -17,15 +21,18 @@ spec:
       labels:
         app: hello-world-app
     spec:
-      serviceAccountName: default
+      serviceAccountName: default  # Ensure the correct service account with Vault permissions
       containers:
         - name: hello-world-app
-          image: sonuverma1505/hello-world-app:latest  # Placeholder, will be updated by Jenkins
+          image: sonuverma1505/hello-world-app:latest  # Placeholder, update as necessary
           ports:
             - containerPort: 80
           env:
             - name: HELLO_WORLD_SECRET
-              value: "vault:hello-world-secret"
+              valueFrom:
+                secretKeyRef:
+                  name: hello-world-secret  # Kubernetes secret created by Vault Injector
+                  key: hello-world-secret  # Key injected by Vault Agent
 ---
 apiVersion: v1
 kind: Service

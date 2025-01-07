@@ -1,16 +1,14 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api-serviceaccount
+  namespace: app  # Use the 'app' namespace
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world-app
   namespace: app  # Use the 'app' namespace
-  annotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: "hello-world-app"
-    vault.hashicorp.com/agent-inject-secret-hello-world-secret: "secret/data/hello-world-app"
-    vault.hashicorp.com/agent-inject-template-hello-world-secret: |
-      {{- with secret "secret/data/hello-world-app" -}}
-      {{ .Data.data.app-secret }}
-      {{- end }}
 spec:
   replicas: 1
   selector:
@@ -20,8 +18,16 @@ spec:
     metadata:
       labels:
         app: hello-world-app
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "hello-world-app"
+        vault.hashicorp.com/agent-inject-secret-hello-world-secret: "secret/data/hello-world-app"
+        vault.hashicorp.com/agent-inject-template-hello-world-secret: |
+          {{- with secret "secret/data/hello-world-app" -}}
+          {{ .Data.data.app-secret }}
+          {{- end }}
     spec:
-      serviceAccountName: default  # Ensure the correct service account with Vault permissions
+      serviceAccountName: api-serviceaccount  # Ensure the correct service account with Vault permissions
       containers:
         - name: hello-world-app
           image: sonuverma1505/hello-world-app:latest  # Placeholder, update as necessary

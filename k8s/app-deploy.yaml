@@ -1,54 +1,55 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: api-serviceaccount
-  namespace: app  # Use the 'app' namespace
+  name: vault-serviceaccount
+  namespace: vault  # Use the 'vault' namespace
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world-app
-  namespace: app  # Use the 'app' namespace
+  namespace: vault
+  labels:
+    app: read-vault-secret
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: hello-world-app
+      app: read-vault-secret
+  replicas: 1
   template:
     metadata:
-      labels:
-        app: hello-world-app
       annotations:
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "hello-world-app"
-        vault.hashicorp.com/agent-inject-secret-hello-world-secret: "secret/data/hello-world-app"
-        vault.hashicorp.com/agent-inject-template-hello-world-secret: |
-          {{- with secret "secret/data/hello-world-app" -}}
-          {{ .Data.data.app-secret }}
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-inject-secret-clisecret: "secret/clisecret"
+        vault.hashicorp.com/agent-inject-template-clisecret: |
+          {{- with secret "secret/clisecret" -}}
+          {{ .Data.data.token }}
           {{- end }}
+        vault.hashicorp.com/role: "vault-role"
+      labels:
+        app: read-vault-secret
     spec:
-      serviceAccountName: api-serviceaccount  # Ensure the correct service account with Vault permissions
+      serviceAccountName: vault-serviceaccount
       containers:
-        - name: hello-world-app
-          image: sonuverma1505/hello-world-app:latest  # Placeholder, update as necessary
-          ports:
-            - containerPort: 80
-          env:
-            - name: HELLO_WORLD_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: hello-world-secret  # Kubernetes secret created by Vault Injector
-                  key: hello-world-secret  # Key injected by Vault Agent
+      - name: hello-world-app
+        image: sonuverma1505/hello-world-app:latest # Placeholder, update as necessary
+        ports:
+        - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: hello-world-app
-  namespace: app  # Use the 'app' namespace
+  namespace: vault
+  labels:
+    app: read-vault-secret
 spec:
+  type: NodePort
   selector:
-    app: hello-world-app
+    app: read-vault-secret
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
+  - protocol: TCP
+    port: 80         # Service port
+    targetPort: 80   # Container port
+    nodePort: 30007  # NodePort 

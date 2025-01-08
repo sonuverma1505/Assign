@@ -24,3 +24,6 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.targetPort }}
+        env:
+        - name: SECRET_FILE_PATH
+          value: "{{ .Values.vault.secretFilePath }}"  # Path to the secret file from values.yaml

@@ -3,8 +3,8 @@ const fs = require('fs');
 const app = express();
 const port = 80;
 
-// Path to the file where the secret is mounted
-const secretFilePath = '/vault/secrets/clisecret';
+// Get the secret file path from environment variables
+const secretFilePath = process.env.SECRET_FILE_PATH || '/vault/secrets/clisecret';
 
 let helloWorldSecret = 'Secret not found';
 

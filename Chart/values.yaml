@@ -12,6 +12,7 @@ service:
   nodePort: 30008
 vault:
   serviceAccountName: vault-serviceaccount2
+  secretFilePath: "/vault/secrets/hellovalue"
 annotations:
   vault.hashicorp.com/role: "hello-world-role"
   vault.hashicorp.com/agent-inject: "true"

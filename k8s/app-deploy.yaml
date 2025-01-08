@@ -36,6 +36,9 @@ spec:
         image: sonuverma1505/hello-world-app:latest # Placeholder, update as necessary
         ports:
         - containerPort: 80
+        env:
+        - name: SECRET_FILE_PATH
+          value: "/vault/secrets/clisecret" # Path to the secret file
 ---
 apiVersion: v1
 kind: Service
@@ -52,4 +55,4 @@ spec:
   - protocol: TCP
     port: 80         # Service port
     targetPort: 80   # Container port
-    nodePort: 30007  # NodePort 
+    nodePort: 30007  # NodePort

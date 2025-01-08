@@ -119,12 +119,6 @@ spec:
           image: your-app-image
           ports:
             - containerPort: 8080
-          env:
-            - name: TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: your-app-secrets
-                  key: token
 ```
 
 Make sure to replace `your-app-deployment`, `your-app`, `your-app-container`, `your-app-image`, and `your-app-secrets` with your own values.

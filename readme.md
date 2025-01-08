@@ -88,6 +88,49 @@ Verify if secret created or not
 vault kv list secret
 ```
 
+
+
+To deploy the application and inject the secret you need to include the necessary annotations in your deployment file, you can refer the following example code snippet:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-app-deployment
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/agent-inject-secret-clisecret: "secret/clisecret"
+    vault.hashicorp.com/agent-inject-template-clisecret: |
+      {{- with secret "secret/clisecret" -}}
+      token={{ .Data.token }}
+      {{- end -}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: your-app
+  template:
+    metadata:
+      labels:
+        app: your-app
+    spec:
+      containers:
+        - name: your-app-container
+          image: your-app-image
+          ports:
+            - containerPort: 8080
+          env:
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: your-app-secrets
+                  key: token
+```
+
+Make sure to replace `your-app-deployment`, `your-app`, `your-app-container`, `your-app-image`, and `your-app-secrets` with your own values.
+
+
+
 Check data if secret is injected or not in the pod
 
 ```bash

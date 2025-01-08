@@ -12,13 +12,12 @@ service:
   nodePort: 30008
 vault:
   role: hello-world-role
-  secretPath: secret/clisecret
   serviceAccountName: vault-serviceaccount2
 annotations:
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/agent-inject-status: "update"
-  vault.hashicorp.com/agent-inject-secret-clisecret: "secret/hellovalue"
-  vault.hashicorp.com/agent-inject-template-clisecret: |
+  vault.hashicorp.com/agent-inject-secret-hellovalue: "secret/hellovalue"
+  vault.hashicorp.com/agent-inject-template-hellovalue: |
     {{- with secret "secret/hellovalue" -}}
     {{ .Data.data.token }}
     {{- end }}

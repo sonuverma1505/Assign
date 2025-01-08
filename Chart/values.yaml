@@ -11,9 +11,9 @@ service:
   targetPort: 80
   nodePort: 30008
 vault:
-  role: hello-world-role
   serviceAccountName: vault-serviceaccount2
 annotations:
+  vault.hashicorp.com/role: "hello-world-role"
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/agent-inject-status: "update"
   vault.hashicorp.com/agent-inject-secret-hellovalue: "secret/hellovalue"

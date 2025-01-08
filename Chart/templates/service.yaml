@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-world-app
+  name: {{ .Values.service.name }}
   namespace: {{ .Values.namespace }}
   labels:
     app: read-vault-secret
